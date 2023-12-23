@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draggable Line Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+</head>
+
+<body>
+    <canvas id="myChart" width="600" height="400" style="border: 1px solid #000;"></canvas>
+
+    <script>
+        const data = {
+            labels: Array.from({
+                length: 40
+            }, (_, i) => i * 10),
+            datasets: [{
+                label: 'Draggable Line',
+
+                borderColor: 'blue', //line color
+                type: 'scatter',
+                data: [{
+                    x: 0,
+                    y: new Date('2023-01-01T00:00:00').getTime(),
+                    laps_completed: 5
+                }, {
+                    x: 15,
+                    y: new Date('2023-01-01T01:15:00').getTime(),
+                    laps_completed: 12
+                }, {
+                    x: 30,
+                    y: new Date('2023-01-01T02:30:00').getTime(),
+                    laps_completed: 18
+                }, {
+                    x: 45,
+                    y: new Date('2023-01-01T03:45:00').getTime(),
+                    laps_completed: 25
+                }, {
+                    x: 60,
+                    y: new Date('2023-01-01T05:00:00').getTime(),
+                    laps_completed: 33
+                }, {
+                    x: 75,
+                    y: new Date('2023-01-01T06:15:00').getTime(),
+                    laps_completed: 40
+                }, {
+                    x: 90,
+                    y: new Date('2023-01-01T07:30:00').getTime(),
+                    laps_completed: 48
+                }, {
+                    x: 105,
+                    y: new Date('2023-01-01T08:45:00').getTime(),
+                    laps_completed: 55
+                }, {
+                    x: 120,
+                    y: new Date('2023-01-01T10:00:00').getTime(),
+                    laps_completed: 62
+                }, {
+                    x: 135,
+                    y: new Date('2023-01-01T11:15:00').getTime(),
+                    laps_completed: 70
+                }, {
+                    x: 150,
+                    y: new Date('2023-01-01T12:30:00').getTime(),
+                    laps_completed: 78
+                }, {
+                    x: 165,
+                    y: new Date('2023-01-01T13:45:00').getTime(),
+                    laps_completed: 85
+                }, {
+                    x: 180,
+                    y: new Date('2023-01-01T15:00:00').getTime(),
+                    laps_completed: 90
+                }, {
+                    x: 195,
+                    y: new Date('2023-01-01T16:15:00').getTime(),
+                    laps_completed: 95
+                }, {
+                    x: 210,
+                    y: new Date('2023-01-01T17:30:00').getTime(),
+                    laps_completed: 97
+                }, {
+                    x: 225,
+                    y: new Date('2023-01-01T18:45:00').getTime(),
+                    laps_completed: 98
+                }, {
+                    x: 240,
+                    y: new Date('2023-01-01T20:00:00').getTime(),
+                    laps_completed: 99
+                }, {
+                    x: 255,
+                    y: new Date('2023-01-01T21:15:00').getTime(),
+                    laps_completed: 100
+                }, {
+                    x: 270,
+                    y: new Date('2023-01-01T22:30:00').getTime(),
+                    laps_completed: 100
+                }, {
+                    x: 285,
+                    y: new Date('2023-01-01T23:45:00').getTime(),
+                    laps_completed: 100
+                }, {
+                    x: 300,
+                    y: new Date('2023-01-01T24:00:00').getTime(),
+                    laps_completed: 100
+                }, ],
+                backgroundColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2.5,
+                fill: false, // Fill area under the line
+                pointRadius: 10, // line point size
+                pointHitRadius: 25, //Radius around line point
+                showLine: true //shows line
+            }]
+        };
+        const ctx = document.getElementById('myChart').getContext('2d');
+
+        const chart = new Chart(ctx, {
+            type: 'scatter',
+            data: data, // data goes here 
+            options: {
+                layout: {
+                    padding: { //chat padding from grid frame
+                        left: 20,
+                        right: 20,
+                        top: 20,
+                        bottom: 10
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'linear', //x label type
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            borderColor: 'rgba(0, 0, 0, 0.5)',
+                            borderWidth: 1
+                        },
+                        title: {
+                            display: true, // Label Title shows at x axel
+                            text: 'Amount' //Name of Title
+                        },
+                        min: 0, // Set a fixed minimum value
+                        max: 350, // Set a fixed maximum value
+                    },
+                    y: {
+                        type: 'time', //y label type
+                        time: {
+                            unit: 'minute', // can use hour. in this case step is 40 min 
+                            displayFormats: {
+                                minute: 'HH:mm'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)', //grid horizontal line color
+                            borderColor: 'rgba(0, 0, 0, 0.5)', // border color
+                            borderWidth: 1
+                        },
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        },
+                        min: new Date('2023-01-01T00:00:00').getTime(), // Set a fixed minimum date in milliseconds
+                        max: new Date('2023-01-01T24:00:00').getTime(), // Set a fixed maximum date in milliseconds
+                    }
+                },
+                plugins: {
+                    dragData: {
+                        round: 1,
+                        showTooltip: true,
+                        dragX: true,
+                        dragDataRound: 1,
+                        onDragEnd: function(event, datasetIndex, index, value) {
+                            // Handle drag end event
+                            console.log('Drag end:', event, datasetIndex, index, value);
+                        },
+                        tooltipFormat: (model) => {
+                            return `(${model.xLabel}, ${model.yLabel.toISOString().substr(11, 5)})`;
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
