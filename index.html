@@ -174,8 +174,26 @@
                         showTooltip: true,
                         dragX: true,
                         dragDataRound: 1,
+                        onDragStart: function(event, element) {
+                            // Save the original x value when start to drag
+                            element._originalX = element._index;
+                        },
+                        onDrag: function(event, datasetIndex, index, value) {
+                            const previousIndex = index - 1;
+                            const nextIndex = index + 1;
+
+                            // Drag piont cant go further then previous point on line
+                            if (previousIndex >= 0 && value.x < data.datasets[datasetIndex].data[previousIndex].x) {
+                                value.x = data.datasets[datasetIndex].data[previousIndex].x;
+                            }
+
+                            // Drag piont cant go further then next point on line
+                            if (nextIndex < data.datasets[datasetIndex].data.length && value.x > data.datasets[datasetIndex].data[nextIndex].x) {
+                                value.x = data.datasets[datasetIndex].data[nextIndex].x;
+                            }
+                        },
                         onDragEnd: function(event, datasetIndex, index, value) {
-                            // Handle drag end event
+                            // console log , end of drag event
                             console.log('Drag end:', event, datasetIndex, index, value);
                         },
                         tooltipFormat: (model) => {
