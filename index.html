@@ -4,205 +4,423 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Draggable Line Chart</title>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Drag data plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata"></script>
+    <!-- Moment.js for handling time -->
     <script src="https://cdn.jsdelivr.net/npm/moment"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <!-- Annotation plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.0.2/chartjs-plugin-annotation.js"></script>
+    <title>Line Chart Example</title>
+    <link rel="stylesheet" href="css/styles.css">
+
 </head>
 
 <body>
-    <canvas id="myChart" width="600" height="400" style="border: 1px solid #000;"></canvas>
+
+
+
+    <div class="heading">
+        <h1>Draggable line chart</h1>
+    </div>
+    <div class="chart-container" style="position: relative; height:40vh; width:100vw">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <div class="datePi">
+        <div class="head2">
+            <h2>Select date</h2>
+        </div>
+        <input type="date" id="datePicker" onchange="updateChart()">
+    </div>
+
+    <div class="card-deck mb-3 text-center">
+        <div class="card mb-4 box-shadow">
+
+            <div class="card-body">
+                <div class="head2">
+                    <h2>Base data</h2>
+                </div>
+                <table id="fixedPointsTable" border="1">
+                    <thead>
+                        <tr>
+                            <th>Point</th>
+                            <th>Time</th>
+                            <th>Value</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>00:00</td>
+                            <td>40</td>
+                            <td>2023-12-30</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>03:00</td>
+                            <td>40</td>
+                            <td>2023-12-30</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>06:00</td>
+                            <td>40</td>
+                            <td>2023-12-30</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>12:00</td>
+                            <td>40</td>
+                            <td>2023-12-30</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>18:00</td>
+                            <td>40</td>
+                            <td>2023-12-30</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>01:00</td>
+                            <td>50</td>
+                            <td>2023-12-31</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>03:00</td>
+                            <td>40</td>
+                            <td>2023-12-31</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>06:00</td>
+                            <td>30</td>
+                            <td>2023-12-31</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>12:00</td>
+                            <td>50</td>
+                            <td>2023-12-31</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>18:00</td>
+                            <td>50</td>
+                            <td>2023-12-31</td>
+                        </tr>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+        <div class="card mb-4 box-shadow">
+            <div class="head2">
+                <h2>Add data point</h2>
+            </div>
+            <div class="card-body">
+                <table id="dynamicDataTable" border="1">
+                    <thead>
+                        <tr>
+                            <th>Point</th>
+                            <th>Time</th>
+                            <th>Value</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Initial row added by JavaScript -->
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+        <div class="card mb-4 box-shadow">
+
+            <div class="card-body">
+                <div><button class="addBtn" onclick="addRow()">Add Row</button></div>
+                <div><button class="insertBtn" onclick="insertDataPoint()">Insert Data Point</button></div>
+                <div><button class="updateBtn" onclick="updateChart()">Update Chart</button></div>
+            </div>
+        </div>
+    </div>
+
 
     <script>
-        const data = {
-            labels: Array.from({
-                length: 40
-            }, (_, i) => i * 10),
-            datasets: [{
-                label: 'Draggable Line',
+        const ctx = document.getElementById('myChart');
+        let chart;
 
-                borderColor: 'blue', //line color
-                type: 'scatter',
-                data: [{
-                    y: 0,
-                    x: new Date('2023-01-01T00:00:00').getTime(),
-                    laps_completed: 5
-                }, {
-                    y: 15,
-                    x: new Date('2023-01-01T01:15:00').getTime(),
-                    laps_completed: 12
-                }, {
-                    y: 30,
-                    x: new Date('2023-01-01T02:30:00').getTime(),
-                    laps_completed: 18
-                }, {
-                    y: 45,
-                    x: new Date('2023-01-01T03:45:00').getTime(),
-                    laps_completed: 25
-                }, {
-                    y: 60,
-                    x: new Date('2023-01-01T05:00:00').getTime(),
-                    laps_completed: 33
-                }, {
-                    y: 75,
-                    x: new Date('2023-01-01T06:15:00').getTime(),
-                    laps_completed: 40
-                }, {
-                    y: 90,
-                    x: new Date('2023-01-01T07:30:00').getTime(),
-                    laps_completed: 48
-                }, {
-                    y: 105,
-                    x: new Date('2023-01-01T08:45:00').getTime(),
-                    laps_completed: 55
-                }, {
-                    y: 120,
-                    x: new Date('2023-01-01T10:00:00').getTime(),
-                    laps_completed: 62
-                }, {
-                    y: 135,
-                    x: new Date('2023-01-01T11:15:00').getTime(),
-                    laps_completed: 70
-                }, {
-                    y: 150,
-                    x: new Date('2023-01-01T12:30:00').getTime(),
-                    laps_completed: 78
-                }, {
-                    y: 165,
-                    x: new Date('2023-01-01T13:45:00').getTime(),
-                    laps_completed: 85
-                }, {
-                    y: 180,
-                    x: new Date('2023-01-01T15:00:00').getTime(),
-                    laps_completed: 90
-                }, {
-                    y: 195,
-                    x: new Date('2023-01-01T16:15:00').getTime(),
-                    laps_completed: 95
-                }, {
-                    y: 210,
-                    x: new Date('2023-01-01T17:30:00').getTime(),
-                    laps_completed: 97
-                }, {
-                    y: 225,
-                    x: new Date('2023-01-01T18:45:00').getTime(),
-                    laps_completed: 98
-                }, {
-                    y: 240,
-                    x: new Date('2023-01-01T20:00:00').getTime(),
-                    laps_completed: 99
-                }, {
-                    y: 255,
-                    x: new Date('2023-01-01T21:15:00').getTime(),
-                    laps_completed: 100
-                }, {
-                    y: 270,
-                    x: new Date('2023-01-01T22:30:00').getTime(),
-                    laps_completed: 100
-                }, {
-                    y: 285,
-                    x: new Date('2023-01-01T23:45:00').getTime(),
-                    laps_completed: 100
-                }, {
-                    y: 300,
-                    x: new Date('2023-01-01T24:00:00').getTime(),
-                    laps_completed: 100
-                }, ],
-                backgroundColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 2.5,
-                fill: false, // Fill area under the line
-                pointRadius: 10, // line point size
-                pointHitRadius: 25, //Radius around line point
-                showLine: true //shows line
-            }]
+        const addRow = () => {
+            const table = document.getElementById('dynamicDataTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            const pointCell = newRow.insertCell(0);
+            const timeCell = newRow.insertCell(1);
+            const valueCell = newRow.insertCell(2);
+            const statusCell = newRow.insertCell(3);
+
+            pointCell.innerHTML = table.rows.length;
+
+            const timeInput = document.createElement('div');
+            timeInput.className = 'time-input';
+
+            const hoursInput = document.createElement('input');
+            hoursInput.type = 'number';
+            hoursInput.className = 'pointTimeHours';
+            hoursInput.min = 0;
+            hoursInput.max = 23;
+            hoursInput.placeholder = 'HH';
+            hoursInput.addEventListener('input', restrictInput);
+            hoursInput.addEventListener('input', handleHourInput);
+            timeInput.appendChild(hoursInput);
+
+            const separator = document.createElement('span');
+            separator.innerHTML = ':';
+            timeInput.appendChild(separator);
+
+            const minutesInput = document.createElement('input');
+            minutesInput.type = 'number';
+            minutesInput.className = 'pointTimeMinutes';
+            minutesInput.min = 0;
+            minutesInput.max = 59;
+            minutesInput.placeholder = 'mm';
+            minutesInput.addEventListener('input', restrictInput);
+            timeInput.appendChild(minutesInput);
+
+            timeCell.appendChild(timeInput);
+
+            const valInput = document.createElement('div');
+
+            const valuesInput = document.createElement('input');
+            valuesInput.type = 'number';
+            valuesInput.className = 'pointValue';
+            valuesInput.min = 0;
+            valuesInput.max = 100;
+            valuesInput.placeholder = 'Value';
+            valuesInput.addEventListener('input', restrictInput);
+            valInput.appendChild(valuesInput);
+
+            valueCell.appendChild(valInput);
+
+            statusCell.innerHTML = `
+        <select class="pointStatus">
+            <option value="off" selected>Off</option>
+            <option value="on">On</option>
+        </select>`;
         };
-        const ctx = document.getElementById('myChart').getContext('2d');
 
-        const chart = new Chart(ctx, {
-            type: 'scatter',
-            data: data, // data goes here 
-            options: {
-                layout: {
-                    padding: { //chat padding from grid frame
-                        left: 20,
-                        right: 20,
-                        top: 20,
-                        bottom: 10
+        const restrictInput = (event) => {
+            const input = event.target;
+            const value = input.value;
+
+            // Remove non-numeric characters
+            const sanitizedValue = value.replace(/[^0-9]/g, '');
+
+            // Ensure the value is within the specified range
+            if (sanitizedValue === '' || (parseInt(sanitizedValue) >= input.min && parseInt(sanitizedValue) <= input.max)) {
+                input.value = sanitizedValue;
+            } else {
+                // If the value is outside the range set it to the max allowed
+                input.value = input.max;
+            }
+        };
+
+        const handleHourInput = (event) => {
+            const hoursInput = event.target;
+            const value = hoursInput.value;
+
+            // Automatically input after entering two digits for hours
+            if (value.length === 2) {
+                const minutesInput = hoursInput.parentElement.querySelector('.pointTimeMinutes');
+                minutesInput.focus();
+            }
+        };
+
+        const insertDataPoint = () => {
+            const dynamicDataTable = document.getElementById('dynamicDataTable').getElementsByTagName('tbody')[0];
+            const timeInput = dynamicDataTable.rows[0].cells[1].getElementsByTagName('input');
+            const valueInput = dynamicDataTable.rows[0].cells[2].getElementsByTagName('input')[0];
+            const statusInput = dynamicDataTable.rows[0].cells[3].getElementsByTagName('select')[0];
+
+            if (statusInput.value === 'on') {
+                const pointTime = moment().startOf('day').add({
+                    hours: parseInt(timeInput[0].value),
+                    minutes: parseInt(timeInput[1].value)
+                });
+
+                // Find the position to insert the data point
+                const fixedPointsTable = document.getElementById('fixedPointsTable').getElementsByTagName('tbody')[0];
+                const insertionIndex = Array.from(fixedPointsTable.rows).findIndex(row => {
+                    const rowTime = moment().startOf('day').add(moment.duration(row.cells[1].innerHTML));
+                    return pointTime.isBefore(rowTime);
+                });
+
+                const newRow = fixedPointsTable.insertRow(insertionIndex);
+                const pointCell = newRow.insertCell(0);
+                const timeCell = newRow.insertCell(1);
+                const valueCell = newRow.insertCell(2);
+
+                pointCell.innerHTML = `New Point`;
+                timeCell.innerHTML = pointTime.format('HH:mm');
+                valueCell.innerHTML = valueInput.value;
+            }
+
+            updateChart();
+        };
+
+        const updateChart = () => {
+            const datePicker = document.getElementById('datePicker');
+            const selectedDate = moment(datePicker.value);
+            const fixedPointsTable = document.getElementById('fixedPointsTable').getElementsByTagName('tbody')[0];
+            const dynamicDataTable = document.getElementById('dynamicDataTable').getElementsByTagName('tbody')[0];
+
+            const fixedPoints = Array.from(fixedPointsTable.rows).filter(row => {
+                // Filter fixed points based on the selected date
+                const rowDate = moment(row.cells[3].innerHTML);
+                return rowDate.isSame(selectedDate, 'day');
+            }).map(row => {
+                const pointTime = moment().startOf('day').add(moment.duration(row.cells[1].innerHTML));
+                return {
+                    y: parseInt(row.cells[2].innerHTML),
+                    x: pointTime,
+                    intervalStart: pointTime.clone().subtract(3, 'hours'),
+                    intervalEnd: pointTime.clone().add(3, 'hours'),
+                };
+            });
+
+            const dynamicPoints = Array.from(dynamicDataTable.rows).map(row => {
+                const timeInput = row.cells[1].getElementsByTagName('input');
+                const valueInput = row.cells[2].getElementsByTagName('input')[0];
+                const statusInput = row.cells[3].getElementsByTagName('select')[0];
+
+                if (statusInput.value === 'on') {
+                    const pointTime = moment().startOf('day').add({
+                        hours: parseInt(timeInput[0].value),
+                        minutes: parseInt(timeInput[1].value)
+                    });
+                    return {
+                        y: parseInt(valueInput.value),
+                        x: pointTime,
+                        intervalStart: pointTime.clone().subtract(3, 'hours'),
+                        intervalEnd: pointTime.clone().add(3, 'hours'),
+                    };
+                }
+            }).filter(point => point !== undefined);
+
+            const allPoints = fixedPoints.concat(dynamicPoints);
+
+            // Sort the data points by x (time) before updating the chart
+            allPoints.sort((a, b) => a.x - b.x);
+            const earliestTime = allPoints.length > 0 ? allPoints[0].x : moment().startOf('day');
+            const latestTime = allPoints.length > 0 ? allPoints[allPoints.length - 1].x : moment().startOf('day').add(24, 'hours');
+            const minY = Math.min(...allPoints.map(point => point.y));
+            const maxY = Math.max(...allPoints.map(point => point.y));
+
+            const data = {
+                datasets: [{
+                    label: 'Draggable Line',
+                    borderColor: 'blue',
+                    type: 'scatter',
+                    data: allPoints,
+                    backgroundColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2.5,
+                    fill: false,
+                    pointRadius: 10,
+                    pointHitRadius: 25,
+                    showLine: true
+                }]
+            };
+
+            const annotationOptions = allPoints.map((point, index) => {
+                return {
+                    type: 'line',
+                    mode: 'horizontal',
+                    scaleID: 'y',
+                    value: point.y,
+                    borderColor: 'rgba(255, 0, 0, 0.5)',
+                    borderWidth: 2,
+                    label: {
+                        enabled: true,
+                        position: 'left',
+                        content: point.y.toString(),
                     }
-                },
-                scales: {
-                    y: {
-                        type: 'linear', //x label type
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.1)',
-                            borderColor: 'rgba(0, 0, 0, 0.5)',
-                            borderWidth: 1
-                        },
-                        title: {
-                            display: true, // Label Title shows at x axel
-                            text: 'Amount' //Name of Title
-                        },
-                        min: 0, // Set a fixed minimum value
-                        max: 350, // Set a fixed maximum value
-                    },
-                    x: {
-                        type: 'time', //y label type
-                        time: {
-                            unit: 'minute', // can use hour. in this case step is 40 min 
-                            displayFormats: {
-                                minute: 'HH:mm'
-                            }
-                        },
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.1)', //grid horizontal line color
-                            borderColor: 'rgba(0, 0, 0, 0.5)', // border color
-                            borderWidth: 1
-                        },
-                        title: {
-                            display: true,
-                            text: 'Time'
-                        },
-                        min: new Date('2023-01-01T00:00:00').getTime(), // Set a fixed minimum date in milliseconds
-                        max: new Date('2023-01-01T24:00:00').getTime(), // Set a fixed maximum date in milliseconds
-                    }
-                },
-                plugins: {
-                    dragData: {
-                        round: 1,
-                        showTooltip: true,
-                        dragX: true,
-                        dragDataRound: 1,
-                        onDragStart: function(event, element) {
-                            // Save the original x value when start to drag
-                            element._originalX = element._index;
-                        },
-                        onDrag: function(event, datasetIndex, index, value) {
-                            const previousIndex = index - 1;
-                            const nextIndex = index + 1;
+                };
+            });
 
-                            // Drag piont cant go further then previous point on line
-                            if (previousIndex >= 0 && value.x < data.datasets[datasetIndex].data[previousIndex].x) {
-                                value.x = data.datasets[datasetIndex].data[previousIndex].x;
-                            }
+            if (chart) {
+                chart.destroy();
+            }
 
-                            // Drag piont cant go further then next point on line
-                            if (nextIndex < data.datasets[datasetIndex].data.length && value.x > data.datasets[datasetIndex].data[nextIndex].x) {
-                                value.x = data.datasets[datasetIndex].data[nextIndex].x;
-                            }
+            chart = new Chart(ctx, {
+                type: 'scatter',
+                data: data,
+                options: {
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour',
+                                displayFormats: {
+                                    hour: 'HH:mm'
+                                }
+                            },
+                            min: earliestTime,
+                            max: latestTime,
                         },
-                        onDragEnd: function(event, datasetIndex, index, value) {
-                            // console log , end of drag event
-                            console.log('Drag end:', event, datasetIndex, index, value);
-                        },
-                        tooltipFormat: (model) => {
-                            return `(${model.xLabel}, ${model.yLabel.toISOString().substr(11, 5)})`;
+                        y: {
+                            type: 'linear',
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                borderColor: 'rgba(0, 0, 0, 0.5)',
+                                borderWidth: 1
+                            },
+                            min: minY - 10, // Adjust to provide space for labels
+                            max: maxY + 10, // Adjust to provide space for labels
                         }
+                    },
+                    plugins: {
+                        dragData: {
+                            round: 1,
+                            showTooltip: true,
+                            dragX: true,
+                            dragDataRound: 1,
+                            onDragStart: function(event, element) {
+                                // Save the original x value on drag start
+                                element._originalX = element._index;
+                            },
+                            onDrag: function(event, datasetIndex, index, value) {
+                                const draggedTime = value.x;
+                                const intervalStart = allPoints[index].intervalStart;
+                                const intervalEnd = allPoints[index].intervalEnd;
+
+                                // Check if dragging point is beyond the allowed interval
+                                value.x = Math.max(intervalStart, Math.min(draggedTime, intervalEnd));
+                            },
+                            onDragEnd: function(event, datasetIndex, index, value) {
+                                // Handle drag end event
+                                console.log('Drag end:', value.x);
+                            },
+                            tooltipFormat: (model) => {
+                                return `(${model.xLabel}, ${model.yLabel.toISOString().substr(11, 5)})`;
+                            }
+                        },
+
                     }
                 }
-            }
-        });
+            });
+        };
+
+        // Add the initial row to the dynamic table
+        addRow();
+        // Update the chart initially
+        updateChart();
     </script>
 </body>
 
