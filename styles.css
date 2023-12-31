@@ -1,0 +1,119 @@
+.mainTable {
+    box-sizing: border-box;
+    padding: 20px;
+}
+
+.heading {
+    text-align: center;
+    color: rgb(0, 0, 0);
+}
+
+.head2 {
+    margin-top: 0px;
+    text-align: center;
+    color: rgb(0, 0, 0);
+}
+
+.datePi {
+    text-align: center;
+}
+
+#datePicker {
+    height: 50px;
+    width: 100px;
+}
+
+#fixedPointsTable {
+    width: 100%;
+}
+
+#dynamicDataTable {
+    width: 100%;
+}
+
+.addBtn {
+    margin-left: 25px;
+    margin-top: 70px;
+    padding: 14px 62px;
+    background-color: white;
+    color: black;
+    border: 2px solid #7eaf46;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.addBtn:hover {
+    background-color: #7eaf46;
+    color: white;
+    text-align: center;
+}
+
+.insertBtn {
+    margin-left: 25px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 14px 40px;
+    background-color: white;
+    color: black;
+    border: 2px solid #7eaf46;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.insertBtn:hover {
+    background-color: #7eaf46;
+    color: white;
+    text-align: center;
+}
+
+.updateBtn {
+    margin-left: 25px;
+    padding: 14px 50px;
+    background-color: white;
+    color: black;
+    border: 2px solid #7eaf46;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.updateBtn:hover {
+    background-color: #7eaf46;
+    color: white;
+    text-align: center;
+}
+
+.card-deck {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+@media (min-width: 576px) {
+    .card-deck {
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-flow: row wrap;
+        flex-flow: row wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+    .card-deck .card {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-flex: 1;
+        -ms-flex: 1 0 0%;
+        flex: 1 0 0%;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        margin-right: 15px;
+        margin-bottom: 0;
+        margin-left: 15px;
+    }
+}
